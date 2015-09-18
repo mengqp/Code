@@ -24,5 +24,5 @@ def atoh( szBuf, length, byflag ):
     return value
 
 buf = "0a0b0c0z050607"
-print(atoh(buf, 2, 1))
+print("value = %x" %atoh(buf, 2, 1))
 input()
