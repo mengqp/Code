@@ -1,171 +1,216 @@
-/*
- * =====================================================================================
- *
- *       Filename:  main.c
- *
- *    Description:  used by linux 
- *					read ini 
- *
- *       Compiler:  gcc
- *
- *        Version:  1.0
- *        Created:  2016年01月09日 11时32分58秒
- *
- *         Author:  mengqp 
- *   Organization:  
- *
- *		  history:
- * =====================================================================================
- */
-#define CONF_FILE_PATH  "config.ini"
- 
-#include <string.h>
- 
-#ifdef WIN32
-#include <Windows.h>
-#include <stdio.h>
-#else
- 
-#define  MAX_PATH 260
- 
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#endif
- 
-char g_szConfigPath[MAX_PATH];
- 
-//获取当前程序目录
-int GetCurrentPath(char buf[],char *pFileName)
+#include <string.h>
+#include <stdbool.h>
+
+static int const TITLE_LEN = 64;
+static int const LINE_LEN = 1024;
+
+/*******************************************************************************
+ * 函数名:GetIniKeyString
+ * 功能描述:获取相应title下key所对应的值
+ * 参数: char *title 配置文件中一组数据的标识
+ * 参数: char *key 这组数据中要读出的值的标识
+ * 参数: char *filename 要读取的文件路径
+ * 返回值: 找到需要查的值则返回正确结果，否则返回NULL
+ ******************************************************************************/
+char * GetIniKeyString( char *title, char *key, char *filename)
 {
-#ifdef WIN32
-    GetModuleFileName(NULL,buf,MAX_PATH); 
-#else
-    char pidfile[64];
-    int bytes;
-    int fd;
- 
-    sprintf(pidfile, "/proc/%d/cmdline", getpid());
- 
-    fd = open(pidfile, O_RDONLY, 0);
-    bytes = read(fd, buf, 256);
-    close(fd);
-    buf[MAX_PATH] = '\0';
- 
-#endif
-    char * p = &buf[strlen(buf)];
-    do
+    FILE *fp;
+    int flag = 0;
+    char sTitle[TITLE_LEN], *tmp;
+    char sLine[LINE_LEN];
+
+    // 以只读方式打开文件
+    fp = fopen(filename, "r");
+    if ( NULL == fp )
     {
-        *p = '\0';
-        p--;
-#ifdef WIN32
-    } while( '\\' != *p );
-#else
-    } while( '/' != *p );
-#endif
- 
-    p++;
- 
-    //配置文件目录
-    memcpy(p,pFileName,strlen(pFileName));
-    return 0;
-}
- 
-//从INI文件读取字符串类型数据
-char *GetIniKeyString(char *title,char *key,char *filename) 
-{ 
-    FILE *fp; 
-    char szLine[1024];
-    static char tmpstr[1024];
-    int rtnval;
-    int i = 0; 
-    int flag = 0; 
-    char *tmp;
- 
-    if((fp = fopen(filename, "r")) == NULL) 
-    { 
-        printf("have   no   such   file \n");
-        return ""; 
+        perror("fopen");
+        return NULL;
     }
-    while(!feof(fp)) 
-    { 
-        rtnval = fgetc(fp); 
-        if(rtnval == EOF) 
-        { 
-            break; 
-        } 
-        else
-        { 
-            szLine[i++] = rtnval; 
-        } 
-        if(rtnval == '\n') 
-        { 
-#ifndef WIN32
-            i--;
-#endif  
-            szLine[i] = '\0';
-            i = 0; 
-            tmp = strchr(szLine, '='); 
- 
-            if(( tmp != NULL )&&(flag == 1)) 
-            { 
-                if(strstr(szLine,key)!=NULL) 
-                { 
-                    //注释行
-                    if ('#' == szLine[0])
-                    {
-                    }
-                    else if ( '/' == szLine[0] && '/' == szLine[1] )
-                    {
-                         
-                    }
-                    else
-                    {
-                        //找打key对应变量
-                        strcpy(tmpstr,tmp+1); 
-                        fclose(fp);
-                        return tmpstr; 
-                    }
-                } 
-            }
-            else
-            { 
-                strcpy(tmpstr,"["); 
-                strcat(tmpstr,title); 
-                strcat(tmpstr,"]");
-                if( strncmp(tmpstr,szLine,strlen(tmpstr)) == 0 ) 
+
+    // 获取每行数据进行分析
+    while ( NULL != fgets(sLine, LINE_LEN, fp ) )
+    {
+        // 开始是//或# 认为是注释
+        if ( 0 == strncmp("//", sLine, 2)
+             || '#' == sLine[0])
+        {
+            continue;
+        }
+
+        // 当找到title后 flag会置为1 查找key
+        if ( 1 == flag )
+        {
+            // 如果有‘=’认为是有数据
+            tmp = strchr( sLine, '=' );
+            if ( NULL != tmp )
+            {
+                // 经较‘=’之前的字符串与key是否一致
+                if ( 0 == strncmp(key, sLine, tmp - sLine ) )
                 {
-                    //找到title
-                    flag = 1; 
+                    sLine[strlen(sLine)] = '\0';
+                    fclose(fp);
+                    return tmp + 1;
                 }
             }
         }
+        else
+        {
+            sprintf( sTitle, "[%s]", title );
+            if ( 0 == strncmp( sTitle, sLine, strlen(sLine) - 1 ) )
+            {
+                flag = 1;
+            }
+        }
     }
-    fclose(fp); 
-    return ""; 
-}
- 
-//从INI文件读取整类型数据
-int GetIniKeyInt(char *title,char *key,char *filename)
+
+    fclose( fp );
+    return NULL;
+}   /*-------- end GetIniKeyString -------- */
+
+/*******************************************************************************
+ * 函数名:GetIniKeyInt
+ * 功能描述:获取ini文件中title下key的数字值
+ * 参数:char *title, char *key, char *filename
+ * 参数:char *title, char *key, char *filename
+ * 参数:char *title, char *key, char *filename
+ * 参数:char *title, char *key, char *filename
+ * 返回值:int
+ ******************************************************************************/
+int GetIniKeyInt(char *title, char *key, char *filename )
 {
-    return atoi(GetIniKeyString(title,key,filename));
-}
- 
-int main(int argc, char* argv[])
+    return atoi(GetIniKeyString(title, key, filename));
+}   /*-------- end GetIniKeyInt -------- */
+
+/*******************************************************************************
+ * 函数名:GetIniKeyHex
+ * 功能描述:获取ini文件中title下key的16进制值
+ * 参数:char *title
+ * 参数:char *key
+ * 参数:char *filename
+ * 返回值:int
+ ******************************************************************************/
+unsigned int GetIniKeyHex(char *title, char *key, char *filename)
 {
-    char buf[MAX_PATH];
-    memset(buf,0,sizeof(buf));
-    GetCurrentPath(buf,CONF_FILE_PATH);
-    strcpy(g_szConfigPath,buf);
- 
-    int iCatAge;
-    char szCatName[32];
-     
-    iCatAge = GetIniKeyInt("CAT","age",g_szConfigPath);
-    strcpy(szCatName,GetIniKeyString("CAT","name",g_szConfigPath));
- 
-	printf ( "iCatAge=%d, szCatName=%s\n", iCatAge, szCatName );
+    unsigned int uiRtn = 0xffffffff;
+    sscanf( GetIniKeyString(title, key, filename), "%x", &uiRtn );
+    return uiRtn;
+}   /*-------- end GetIniKeyHex -------- */
+
+/*******************************************************************************
+ * 函数名:PutIniKeyString
+ * 功能描述:设置ini文件中title下key的字符串值
+ * 参数: char *title 配置文件中一组数据的标识
+ * 参数: char *key 这组数据中要读出的值的标识
+ * 参数: char *val 更改后的值
+ * 参数: char *filename 要读取的文件路径
+ * 返回值:bool 成功返回true 否则返回false
+ ******************************************************************************/
+bool PutIniKeyString( char *title, char *key, char *val, char *filename )
+{
+    FILE *fpr, *fpw;
+    int flag = 0;
+    char sLine[LINE_LEN], sTitle[TITLE_LEN], *tmp;
+
+    // 以读的方式打开目标文件
+    fpr = fopen( filename, "r");
+    if ( NULL == fpr )
+    {
+        perror("fopen");
+    }
+    // 以写的方式创建临时文件
+    sprintf(sLine, "%s.tmp", filename);
+    fpw = fopen( sLine, "w" );
+    if ( NULL == fpw )
+    {
+        perror("fopen");
+    }
+
+    // 读目标文件的每一行数据
+    while ( NULL != fgets( sLine, LINE_LEN, fpr ) )
+    {
+        // 当flag 设定为2时为已找到目标值，不再需要改动
+        if ( 2 != flag )
+        {
+            // 当flag 设定为1时为已找到修改值属于那一组数据
+            if ( 1 == flag )
+            {
+                tmp = strchr( sLine, '=' );
+                if ( NULL != tmp )
+                {
+                    // 当相等时为找到这组数据中值的标识
+                    if ( 0 == strncmp(key, sLine, tmp - sLine ) )
+                    {
+                        // 设置flag为2
+                        flag = 2;
+                        // 组织一行数据
+                        sprintf( tmp + 1, "%s\n", val );
+                    }
+                }
+            }
+            else
+            {
+                sprintf(sTitle, "[%s]", title );
+                // 当相等时为找到标识组数据
+                if ( 0 == strncmp(sTitle, sLine, strlen(sLine) - 1 ) )
+                {
+                    // 设置flag为1
+                    flag = 1;
+                }
+            }
+        }
+
+        // 将每行数据写入临时文件
+        fputs( sLine, fpw );
+    }
+
+    fclose( fpr );
+    fclose( fpw );
+
+    sprintf( sLine, "%s.tmp", filename );
+
+    // 通过重命名的方式将临时文件更新为目标文件
+    return rename( sLine, filename );
+}   /*-------- end PutIniKeyString -------- */
+
+/*******************************************************************************
+ * 函数名:PutIniKeyInt
+ * 功能描述:设置ini文件中title下key的int值
+ * 参数: char *title 配置文件中一组数据的标识
+ * 参数: char *key 这组数据中要读出的值的标识
+ * 参数: char *val 更改后的值
+ * 参数: char *filename 要读取的文件路径
+ * 返回值:int
+ ******************************************************************************/
+int PutIniKeyInt( char *title, char *key, int val, char *filename )
+{
+    char sVal[32];
+    sprintf(sVal, "%d", val);
+    return PutIniKeyString(title, key, sVal, filename);
+}   /*-------- end PutIniKeyInt -------- */
+
+/*******************************************************************************
+ * 函数名:PutIniKeyHex
+ * 功能描述:设置ini文件中title下key的int值
+ * 参数: char *title 配置文件中一组数据的标识
+ * 参数: char *key 这组数据中要读出的值的标识
+ * 参数: char *val 更改后的值
+ * 参数: char *filename 要读取的文件路径
+ * 返回值:int
+ ******************************************************************************/
+int PutIniKeyHex( char *title, char *key, unsigned int val, char *filename )
+{
+    char sVal[32];
+    sprintf(sVal, "%x", val);
+    return PutIniKeyString(title, key, sVal, filename);
+}   /*-------- end PutIniKeyHex -------- */
+
+int main(int argc,char *argv[])
+{
+    printf("%s\n", GetIniKeyString("DOG", "name", "config.ini"));
+    printf("%d\n", GetIniKeyInt("DOG", "age", "config.ini"));
+    PutIniKeyString("CAT", "name", "ddd", "config.ini");
+    PutIniKeyInt("DOG", "age", 28, "config.ini");
     return 0;
 }
