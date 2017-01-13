@@ -1,0 +1,36 @@
+﻿<dock>
+	<info num = "2">
+		<elemet index="0" name="报文显示" widget = "msgDock"/>
+		<elemet index="1" name="日志显示" widget = "logDock"/>
+	</info>
+	
+	<msgDock num = "4" >
+		<elemet index="0" name ="清空" funcindex="0" />
+		<elemet index="1" name ="暂停" funcindex="1" />
+		<elemet index="2" name ="保存" funcindex="2" />
+		<elemet index="3" name ="16进制" funcindex="3" />
+	</msgDock>
+	
+	
+	<logDock  num = "3">
+		<elemet index="0" name ="清空" funcindex="0" />
+		<elemet index="1" name ="暂停" funcindex="1" />
+		<elemet index="2" name ="保存" funcindex="2" />
+	</logDock>
+	
+	<edit name="查看编缉区" readonly="1" maxrow="1500" />
+	
+	<color num="3">
+		<elemet index="0" name ="red" funcname = "msgRecv" />
+		<elemet index="1" name ="green" funcname = "msgSend" />
+		<elemet index="2" name ="black" funcname = "logDisplay" />	
+	</color>
+	
+	<confunc num = "4" name="连接的功能列表">
+		<elemet index="0"  name="clearEdit" wide="60" type = "pushButton"/>
+		<elemet index="1"  name="stopEdit" wide="60" type = "checkBox"/>
+		<elemet index="2"  name="saveEdit" wide="60" type = "checkBox"/>
+		<elemet index="3"  name="isHex" wide="60" type = "checkBox"/>
+	</confunc>
+
+</dock>
