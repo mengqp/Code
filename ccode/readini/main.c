@@ -5,16 +5,19 @@
 
 static int const TITLE_LEN = 64;
 static int const LINE_LEN = 1024;
+#define GETINI_INT_ERROR  -1;
+#define GETINI_HEX_ERROR  0xffffffff;
 
 /*******************************************************************************
  * 函数名:GetIniKeyString
  * 功能描述:获取相应title下key所对应的值
  * 参数: char *title 配置文件中一组数据的标识
  * 参数: char *key 这组数据中要读出的值的标识
+ * 参数: unsigned int len 读出值的最长长度
  * 参数: char *filename 要读取的文件路径
  * 返回值: 找到需要查的值则返回正确结果，否则返回NULL
  ******************************************************************************/
-char * GetIniKeyString( char *title, char *key, char *filename)
+char * GetIniKeyString( char *title, char *key, char *buf, unsigned int len,  char *filename)
 {
     FILE *fp;
     int flag = 0;
@@ -51,7 +54,17 @@ char * GetIniKeyString( char *title, char *key, char *filename)
                 {
                     sLine[strlen(sLine)] = '\0';
                     fclose(fp);
-                    return tmp + 1;
+                    if ( strlen(tmp) > ( len + 1) )
+                    {
+                        strncpy( buf, tmp+1, len);
+                    }
+                    else
+                    {
+                        strcpy( buf, tmp+1);
+                    }
+
+                    tmp = buf;
+                    return tmp ;
                 }
             }
         }
@@ -80,7 +93,15 @@ char * GetIniKeyString( char *title, char *key, char *filename)
  ******************************************************************************/
 int GetIniKeyInt(char *title, char *key, char *filename )
 {
-    return atoi(GetIniKeyString(title, key, filename));
+    char buf[LINE_LEN];
+    int iRtn = GETINI_INT_ERROR;
+
+    char *p = GetIniKeyString(title, key, buf, LINE_LEN, filename);
+    if ( NULL != p)
+    {
+        sscanf( p, "%d", &iRtn );
+    }
+    return iRtn;
 }   /*-------- end GetIniKeyInt -------- */
 
 /*******************************************************************************
@@ -93,8 +114,13 @@ int GetIniKeyInt(char *title, char *key, char *filename )
  ******************************************************************************/
 unsigned int GetIniKeyHex(char *title, char *key, char *filename)
 {
-    unsigned int uiRtn = 0xffffffff;
-    sscanf( GetIniKeyString(title, key, filename), "%x", &uiRtn );
+    char buf[LINE_LEN];
+    unsigned int uiRtn = GETINI_HEX_ERROR;
+    char *p = GetIniKeyString(title, key, buf, LINE_LEN, filename);
+    if ( NULL != p)
+    {
+        sscanf( p, "%x", &uiRtn );
+    }
     return uiRtn;
 }   /*-------- end GetIniKeyHex -------- */
 
@@ -208,7 +234,9 @@ int PutIniKeyHex( char *title, char *key, unsigned int val, char *filename )
 
 int main(int argc,char *argv[])
 {
-    printf("%s\n", GetIniKeyString("DOG", "name", "config.ini"));
+    char buf[128] = "";
+    int val;
+    printf("%s\n", GetIniKeyString("DOG", "name", buf, 1, "config.ini"));
     printf("%d\n", GetIniKeyInt("DOG", "age", "config.ini"));
     PutIniKeyString("CAT", "name", "ddd", "config.ini");
     PutIniKeyInt("DOG", "age", 28, "config.ini");
