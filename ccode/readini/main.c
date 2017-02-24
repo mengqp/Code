@@ -235,10 +235,10 @@ int PutIniKeyHex( char *title, char *key, unsigned int val, char *filename )
 int main(int argc,char *argv[])
 {
     char buf[128] = "";
-    int val;
-    printf("%s\n", GetIniKeyString("DOG", "name", buf, 1, "config.ini"));
-    printf("%d\n", GetIniKeyInt("DOG", "age", "config.ini"));
-    PutIniKeyString("CAT", "name", "ddd", "config.ini");
-    PutIniKeyInt("DOG", "age", 28, "config.ini");
+    /* int val; */
+    printf("%s\n", GetIniKeyString((char *)"DOG", (char *)"name", buf, 1, (char *)"config.ini"));
+    printf("%d\n", GetIniKeyInt((char *)"DOG", (char *)"age", (char *)"config.ini"));
+    PutIniKeyString((char *)"CAT", (char *)"name", (char *)"ddd", (char *)"config.ini");
+    PutIniKeyInt((char *)"DOG", (char *)"age", 28, (char *)"config.ini");
     return 0;
 }
