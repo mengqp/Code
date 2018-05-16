@@ -1,0 +1,41 @@
+﻿<comm>
+	<commtype linenum = "3" menuindex= "3" name="类型">
+        <elemet index="0" name ="serial" />
+        <elemet index="1" name ="tcpserver" />
+        <elemet index="2" name ="tcpclient" />
+		<elemet index="3" name ="serial" />
+    </commtype>
+	
+	<tcpclient name = "TCP客户端" num = "2" lenth="120" height="60" interval="10">
+		<elemet index="0" name="ip" height="20" namelenth="60" type="lineEdit" typelenth = "60" tips=""/>
+		<elemet index="1" name="端口" height="20" namelenth="60" type="lineEdit" typelenth = "60" tips=""/>
+	</tcpclient>
+	
+	<tcpserver name = "TCP服务器" num = "1" lenth="120" height="60" interval="10">
+		<elemet index="0" name="端口" height="20" namelenth="60" type="lineEdit" typelenth = "60" tips=""/>
+	</tcpserver>
+		
+	<udp name = "UDP" num = "2" lenth="120" height="60" interval="10">
+		<elemet index="0" name="ip" height="20" namelenth="60" type="lineEdit" typelenth = "60" tips=""/>
+		<elemet index="1" name="端口" height="20" namelenth="60" type="lineEdit" typelenth = "60" tips=""/>
+		
+	</udp>
+	
+	<serial name = "串口" num = "5" lenth="120" height="60" interval="10">
+		<elemet index="0" name="串口号" height="20" namelenth="60" type="comboBox" typelenth = "60" tips=""/>
+		<elemet index="1" name="波特率" height="20" namelenth="60" type="comboBox" typelenth = "60" tips=""/>
+		<elemet index="2" name="数据位" height="20" namelenth="60" type="comboBox" typelenth = "60" tips=""/>
+		<elemet index="3" name="校验位" height="20" namelenth="60" type="comboBox" typelenth = "60" tips=""/>
+		<elemet index="4" name="停止位" height="20" namelenth="60" type="comboBox" typelenth = "60" tips=""/>	
+	</serial>
+	
+	<comboBox num = "5">
+	<elemet index="0"  commindex = "3" typeindex="0" value = "COM1 COM2 COM3 COM4 COM5 COM6 COM7 COM8"/>
+	<elemet index="1"  commindex = "3" typeindex="1" value = "9600 1200 4800"/>
+	<elemet index="2"  commindex = "3" typeindex="2" value = "8 7 6 5"/>
+	<elemet index="3"  commindex = "3" typeindex="3" value = "n e"/>
+	<elemet index="4"  commindex = "3" typeindex="4" value = "1 2 1.5"/>
+	</comboBox>
+
+
+</comm>

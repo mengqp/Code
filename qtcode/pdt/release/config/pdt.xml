@@ -1,0 +1,67 @@
+﻿<pdt>
+	<menu num = "7" name = "菜单栏">
+		<elemet index="0" name ="工程" code = "gc"/>
+		<elemet index="1" name ="配置" code = "pz"/>
+		<elemet index="2" name ="通讯" code = "tx"/>
+		<elemet index="3" name ="操作" code = "cz"/>
+		<elemet index="4" name ="视图" code = "st"/>
+		<elemet index="5" name ="工具" code = "gj"/>
+		<elemet index="6" name ="帮助" code = "bz"/>
+	</menu>
+    <toolbar num="9" name = "工具栏" menuindex="4">
+		<elemet index="0"  menuindex = "0" elemetindex = "0"/>
+		<elemet index="1"  menuindex = "0" elemetindex = "1"/>
+		<elemet index="2"  menuindex = "0" elemetindex = "2"/>
+		<elemet index="3"  menuindex = "0" elemetindex = "3"/>
+		<elemet index="4"  menuindex = "1" elemetindex = "1"/>
+		<elemet index="5"  menuindex = "2" elemetindex = "0"/>
+		<elemet index="6"  menuindex = "2" elemetindex = "1"/>
+		<elemet index="7"  menuindex = "2" elemetindex = "2"/>
+		<elemet index="8"  menuindex = "2" elemetindex = "3"/>
+
+    </toolbar>
+	<gc num = "4">
+		<elemet index="0" name ="新建工程" pic = "images/newProject.png" shortcut = "Ctrl+N" tips="新建工程"/>
+		<elemet index="1" name ="打开工程" pic = "images/openProject.png" shortcut = "Ctrl+O" tips=""/>
+		<elemet index="2" name ="保存工程" pic = "images/saveProject.png" shortcut = "Ctrl+S" tips=""/>
+		<elemet index="3" name ="关闭工程" pic = "images/closeProject.png" shortcut = "Ctrl+W" tips=""/>
+	</gc>
+	<pz num = "2">
+		<elemet index="0" name ="协议" pic = "" shortcut = "" tips=""/>
+		<elemet index="1" name ="模版" pic = "images/indentGuide.png" shortcut = "" tips=""/>
+	</pz>
+	<tx num = "4">
+		<elemet index="0" name ="类型" pic = "images/type.png" shortcut = "" tips=""/>
+		<elemet index="1" name ="属性" pic = "images/attri.png" shortcut = "" tips=""/>
+		<elemet index="2" name ="链接" pic = "images/link.png" shortcut = "" tips=""/>
+		<elemet index="3" name ="断开" pic = "images/unlink.png" shortcut = "" tips=""/>
+	</tx>
+	<cz num = "0">
+	</cz>
+	<st num = "0">
+		<elemet index="0" name ="工具栏" pic = "" shortcut = "" tips=""/>
+		<elemet index="1" name ="报文显示" pic = "" shortcut = "" tips=""/>
+		<elemet index="2" name ="日志显示" pic = "" shortcut = "" tips=""/>
+	</st>
+	<gj num = "2">
+		<elemet index="0" name ="插件" pic = "" shortcut = "" tips=""/>
+		<elemet index="1" name ="外部" pic = "" shortcut = "" tips=""/>
+	</gj>
+	<bz num = "2">
+		<elemet index="0" name ="版本" pic = "images/version.png" shortcut = "" tips=""/>
+		<elemet index="1" name ="使用" pic = "images/use.png" shortcut = "" tips=""/>
+	</bz>
+
+	<proto num = "1">
+        <elemet index="0" name ="modbus" cfgpath="../config/modbus.xml"/>
+	</proto>
+	
+	<confunc num = "5" name="连接的功能列表">
+		<elemet index="0"  name="newProject" menuindex = "0" elemetindex = "0"/>
+		<elemet index="1"  name="openProject" menuindex = "0" elemetindex = "1"/>
+		<elemet index="2"  name="saveProject" menuindex = "0" elemetindex = "2"/>
+		<elemet index="3"  name="closeProject" menuindex = "0" elemetindex = "3"/>
+		<elemet index="4"  name="Dock" menuindex = "4" elemetindex = "0"/>
+	</confunc>
+	
+</pdt>
